@@ -1,0 +1,16 @@
+[
+    {
+      "studentId": "1",
+      "lastName": "Иванов",
+      "firstName": "Иван",
+      "middleName": "Иванович",
+      "present": false
+    },
+    {
+      "studentId": "2",
+      "lastName": "Петрова",
+      "firstName": "Мария",
+      "middleName": "Сергеевна",
+      "present": false
+    }
+  ]
