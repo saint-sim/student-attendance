@@ -9,7 +9,19 @@
 <body>
     <nav></nav>
     <main>
-
+        <div>
+            <p>Добавить студента:</p>
+            <form id="add-form">
+                <input type="text" name="fullName" placeholder="Введите полное имя" required>
+                <input type="submit" value="Подтвердить">
+            </form>
+            <p id="form-error" class="error" hidden></p>
+        </div>
+        <div id="students"></div>
+        <div>
+            <button>Создать список присутсвующих</button>
+            <button>Создать список отсутсвующих</button>
+        </div>
     </main>
     <footer></footer>
     <script src="./js/app.js"></script>
