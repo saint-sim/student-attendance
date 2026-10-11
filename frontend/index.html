@@ -19,8 +19,9 @@
         </div>
         <div id="students"></div>
         <div>
-            <button>Создать список присутсвующих</button>
-            <button>Создать список отсутсвующих</button>
+            <input type="checkbox" id="main-checkbox" onchange="chooseAll(this.checked)" ${isAllChecked ? "checked" : ""}> 
+            <button onclick="copyStudents(true)">Список присутсвующих</button>
+            <button onclick="copyStudents(false)">Список отсутсвующих</button>
         </div>
     </main>
     <footer></footer>

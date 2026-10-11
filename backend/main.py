@@ -59,6 +59,16 @@ def create_student(payload: StudentCreate) -> dict:
     write_students(students)
     return student
 
+@app.patch("/api/students/bulk/present")
+def update_all_attendance(payload: StudentUpdate) -> list[dict]:
+    students = read_students()
+    # Меняем статус 'present' абсолютно у всех студентов
+    for student in students:
+        student["present"] = payload.present
+        
+    write_students(students)
+    return students
+
 
 @app.patch("/api/students/{student_id}")
 def update_student(student_id: str, payload: StudentUpdate) -> dict:

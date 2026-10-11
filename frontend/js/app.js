@@ -1,7 +1,7 @@
 "use strict";
 
 const API_URL = "/api/students";
-let localStudentsList = []; 
+let localStudentsList = [];
 
 function showFormError(message) {
     const element = document.querySelector("#form-error");
@@ -62,11 +62,40 @@ function renderClassmates(students) {
                     <th>№</th>
                     <th>ФИО</th>
                     <th>На паре</th>
+                    <th>Удалить студента</th>
                 </tr>
             </thead>
             <tbody>${rows}</tbody>
         </table>`;
 }
+
+async function chooseAll(presentStatus) {
+    showFormError("");
+    const mainCheckbox = document.querySelector("#main-checkbox");
+    if (mainCheckbox) mainCheckbox.disabled = true;
+
+    try {
+        const res = await fetch(`${API_URL}/bulk/present`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ present: presentStatus }),
+        });
+
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        localStudentsList.forEach((student) => {
+            student.present = presentStatus;
+        });
+
+        renderClassmates(localStudentsList);
+    } catch (error) {
+        console.error("Не удалось обновить всех студентов:", error.message);
+        showFormError("Не удалось изменить статус всех студентов");
+        if (mainCheckbox) mainCheckbox.checked = !presentStatus;
+    } finally {
+        if (mainCheckbox) mainCheckbox.disabled = false;
+    }
+}
+
 
 async function deleteStudent(studentId) {
     const index = localStudentsList.findIndex((s) => String(s.studentId) === String(studentId));
@@ -84,7 +113,6 @@ async function deleteStudent(studentId) {
             throw new Error(detail);
         }
 
-        // 2. Если сервер успешно удалил, удаляем его из локального массива в памяти
         const index = localStudentsList.findIndex(
             (s) => String(s.studentId) === String(studentId),
         );
@@ -92,7 +120,6 @@ async function deleteStudent(studentId) {
             localStudentsList.splice(index, 1);
         }
 
-        // 3. Перерисовываем таблицу с обновленным массивом
         renderClassmates(localStudentsList);
     } catch (error) {
         console.error("Не удалось удалить студента:", error.message);
@@ -123,6 +150,29 @@ async function addStudent(student) {
     }
 }
 
+
+async function copyStudents(present) {
+    if (!navigator.clipboard) {
+        showFormError(
+            "Ваш браузер не поддерживает копирование или сайт работает не по HTTPS",
+        );
+        return;
+    }
+
+    const presentStudents = localStudentsList.filter(
+        (student) => student.present === present,
+    );
+
+    const textLines = presentStudents.map((student) => {
+        return `${student.lastName} ${student.firstName}`;
+    });
+
+    const finalText = textLines.join("\n");
+    await navigator.clipboard.writeText(finalText);
+    console.log(finalText);
+}
+
+
 document.querySelector("#students").addEventListener("change", async (event) => {
     const checkbox = event.target;
     if (!(checkbox instanceof HTMLInputElement) || checkbox.type !== "checkbox") return;
@@ -135,6 +185,14 @@ document.querySelector("#students").addEventListener("change", async (event) => 
             body: JSON.stringify({ present: checkbox.checked }),
         });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        
+        const student = localStudentsList.find(
+            (s) => String(s.studentId) === String(checkbox.dataset.studentId),
+        );
+        if (student) {
+            student.present = checkbox.checked; 
+        }
+
     } catch (error) {
         checkbox.checked = !checkbox.checked;
         showFormError("Не удалось обновить посещаемость");
