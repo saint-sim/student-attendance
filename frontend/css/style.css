@@ -1,26 +1,154 @@
 body {
-    background-color: azure;
+    font-family: Arial, sans-serif;
+    background-color: #f4f6f9;
+    color: #333;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-table {
-    border-collapse: collapse;
+/* Навигация и подвал */
+nav, footer {
+    width: 100%;
+    max-width: 600px;
+    text-align: center;
+    padding: 10px 0;
+    color: #666;
 }
 
-td, th {
-    border: 1px solid black;
+/* 2. Главный контейнер (строго под ваш <main>) */
+main {
+    width: 100%;
+    max-width: 600px;
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 25px; /* Отступы между вашими четырьмя внутри <main> */
 }
 
-.error {
-    color: red;
+/* Подписи к блокам */
+main p {
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #444;
 }
 
+/* 3. Форма добавления студента */
+#add-form {
+    display: flex;
+    gap: 10px;
+}
+
+#add-form input[type="text"] {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    outline: none;
+}
+
+#add-form input[type="text"]:focus {
+    border-color: #007bff;
+}
+
+/* 4. Все кнопки (включая инпут-кнопку и кнопки управления) */
+button, input[type="submit"] {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.2s;
+}
+
+/* Стилизация конкретных кнопок */
+input[type="submit"] { background-color: #007bff; color: white; }
+input[type="submit"]:hover { background-color: #0056b3; }
+
+#save-all-btn { background-color: #28a745; color: white; }
+#save-all-btn:hover { background-color: #218838; }
+
+#save-file { background-color: #6c757d; color: white; }
+#save-file:hover { background-color: #5a6268; }
+
+/* Кнопки списков присутствующих/отсутствующих */
+button:not([id]) {
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    color: #333;
+}
+button:not([id]):hover {
+    background-color: #e2e6ea;
+}
+
+/* Блок с кнопками управления и чекбоксом */
+main div:nth-child(3) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+}
+
+/* 5. Блок списка студентов */
+#students {
+    min-height: 50px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 10px;
+    background: #fafafa;
+}
+
+/* 6. Зона Drag and Drop */
 .drag-and-drop {
-    width: 200px;
-    height: 200px;
-    background-color: aquamarine;
+    border: 2px dashed #bbb;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    background: #fdfdfd;
+    color: #666;
 }
 
 .load-file-label {
-    border: 1px solid black;
-    background-color:rgb(129, 129, 129);
+    display: inline-block;
+    margin-top: 5px;
+    color: #007bff;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.load-file-label:hover {
+    color: #0056b3;
+}
+
+/* Текст ошибки */
+.error {
+    color: #dc3545;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+@media (max-width: 480px) {
+    /* Делаем форму добавления вертикальной */
+    #add-form {
+        flex-direction: column;
+    }
+
+    /* Растягиваем кнопки управления на всю ширину экрана смартфона */
+    main div:nth-child(3) {
+        flex-direction: column;
+        align-items: stretch; /* Кнопки станут одинаковой ширины */
+    }
+    
+    /* Выравниваем чекбокс по центру, если кнопки встали друг под друга */
+    #main-checkbox {
+        align-self: center;
+        transform: scale(1.2); /* Делаем чекбокс чуть крупнее для удобства нажатия пальцем */
+    }
 }
