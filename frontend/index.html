@@ -23,6 +23,11 @@
             <button onclick="copyStudents(true)">Список присутсвующих</button>
             <button onclick="copyStudents(false)">Список отсутсвующих</button>
             <button id="save-all-btn" onclick="updateStudents()">Сохранить изменения</button>
+            <button id="save-file">Сохранить в JSON</button>
+        </div>
+        <div class="drag-and-drop">Перетащите файл json сюда
+            <input type="file" accept=".json" id="load-file" style="display: none;">
+            <label for="load-file" class="load-file-label">Выбрать файл</label>
         </div>
     </main>
     <footer></footer>

@@ -2,6 +2,7 @@
 
 const API_URL = "/api/students";
 let localStudentsList = [];
+let isConsoleLog = false;
 
 function showFormError(message) {
     const element = document.querySelector("#form-error");
@@ -37,7 +38,9 @@ async function loadStudents() {
         localStudentsList = sortStudent(localStudentsList);
         renderStudents(localStudentsList);
     } catch (error) {
-        console.error("Ошибка при чтении JSON:", error.message);
+        if (isConsoleLog) {
+            console.error("Ошибка при чтении JSON:", error.message);
+        }
     }
 }
 
@@ -60,7 +63,9 @@ async function updateStudents() {
             throw new Error(`HTTP ${res.status} — ${res.url}`);
         }
     } catch (error) {
-        console.error("Не удалось обновить всех студентов:", error.message);
+        if (isConsoleLog) {
+            console.error("Не удалось обновить всех студентов:", error.message);
+        }
         showFormError(
             "Критическая ошибка: изменения не были сохранены на сервере.",
         );
@@ -113,7 +118,9 @@ function deleteStudent(studentId) {
 }
 
 function addStudent(student) {
-    console.log(student);
+    if (isConsoleLog) {
+        console.log(student)
+    }
     showFormError("");
     const nameParts = student.split(/\s+/);
     const maxId = localStudentsList.reduce((max, s) => {
@@ -149,7 +156,9 @@ function copyStudents(present) {
     });
     const finalText = textLines.join("\n");
     navigator.clipboard.writeText(finalText);
-    console.log(finalText);
+    if (isConsoleLog) {
+        console.log(finalText);
+    }
 }
 
 
@@ -171,6 +180,136 @@ document.querySelector("#add-form").addEventListener("submit", (event) => {
     const form = event.currentTarget;
     const added = addStudent(form.fullName.value.trim());
     if (added) form.reset();
+});
+
+document.querySelector(".drag-and-drop").addEventListener("drop", (e) => {
+    e.preventDefault();
+    // 1. Берем самый первый файл из тех, что сбросил пользователь
+    const file = e.dataTransfer.files[0];
+
+    // Проверяем, что файл вообще есть и это именно JSON
+    if (
+        !file ||
+        (file.type !== "application/json" && !file.name.endsWith(".json"))
+    ) {
+        alert("Пожалуйста, сбросьте файл в формате JSON!");
+        return;
+    }
+
+    // 2. Создаем инструмент для чтения файлов
+    const reader = new FileReader();
+
+    // 3. Настраиваем событие: что делать, когда файл полностью прочитается
+    reader.onload = (event) => {
+        try {
+            // event.target.result содержит сырой текст из JSON-файла
+            const jsonText = event.target.result;
+
+            // Парсим строку в настоящий JavaScript-массив/объект
+            const parsedData = JSON.parse(jsonText);
+
+            // Записываем данные в вашу глобальную переменную
+            localStudentsList = parsedData;
+            updateStudents();
+            renderStudents(localStudentsList);
+            if (isConsoleLog) {
+                console.log(
+                    "Данные успешно загружены в глобальную переменную:",
+                    localStudentsList,
+                )};
+        } catch (error) {
+            console.error("Ошибка при чтении JSON:", error);
+        }
+    };
+    reader.readAsText(file);
+});
+
+document.querySelector("#load-file").addEventListener("change", (e) => {
+    // 1. Берем самый первый файл из тех, что сбросил пользователь
+    const file = e.target.files[0];
+
+    // Проверяем, что файл вообще есть и это именно JSON
+    if (
+        !file ||
+        (file.type !== "application/json" && !file.name.endsWith(".json"))
+    ) {
+        alert("Пожалуйста, сбросьте файл в формате JSON!");
+        return;
+    }
+
+    // 2. Создаем инструмент для чтения файлов
+    const reader = new FileReader();
+
+    // 3. Настраиваем событие: что делать, когда файл полностью прочитается
+    reader.onload = (event) => {
+        try {
+            // event.target.result содержит сырой текст из JSON-файла
+            const jsonText = event.target.result;
+
+            // Парсим строку в настоящий JavaScript-массив/объект
+            const parsedData = JSON.parse(jsonText);
+
+            // Записываем данные в вашу глобальную переменную
+            localStudentsList = parsedData;
+            updateStudents();
+            renderStudents(localStudentsList);
+            if (isConsoleLog) {
+                console.log(
+                    "Данные успешно загружены в глобальную переменную:",
+                    localStudentsList,
+                );
+            }
+        } catch (error) {
+            console.error("Ошибка при чтении JSON:", error);
+        }
+    };
+    reader.readAsText(file);
+})
+
+document.querySelector(".drag-and-drop").addEventListener("dragover", (e) => {
+    e.preventDefault();
+});
+
+document.querySelector("#save-file").addEventListener("click", () => {
+    // 1. Проверяем, есть ли вообще данные для сохранения
+    if (
+        !localStudentsList ||
+        (Array.isArray(localStudentsList) && localStudentsList.length === 0)
+    ) {
+        alert("Нет данных для сохранения!");
+        return;
+    }
+
+    try {
+        // 2. Превращаем JavaScript-объект/массив обратно в красивую JSON-строку
+        // Параметры null и 2 делают текст читаемым (с отступами и переносами строк)
+        const jsonString = JSON.stringify(localStudentsList, null, 2);
+
+        // 3. Создаем Blob — специальный объект для работы с бинарными/текстовыми данными
+        const blob = new Blob([jsonString], { type: "application/json" });
+
+        // 4. Создаем виртуальную ссылку <a> в памяти браузера
+        const link = document.createElement("a");
+
+        // 5. Генерируем временный URL-адрес для нашего Blob-объекта
+        link.href = URL.createObjectURL(blob);
+
+        // 6. Указываем имя файла, под которым он сохранится у пользователя
+        link.download = "students.json";
+
+        // 7. Программно кликаем по ссылке, чтобы началось скачивание
+        link.click();
+
+        // 8. Очищаем память, удаляя созданный временный URL
+        URL.revokeObjectURL(link.href);
+
+        if (typeof isConsoleLog !== "undefined" && isConsoleLog) {
+            console.log("Файл students.json успешно сохранен!");
+        }
+    } catch (error) {
+        console.error("Ошибка при сохранении файла:", error);
+        alert("Не удалось сохранить файл.");
+    }
 });
 
 loadStudents();

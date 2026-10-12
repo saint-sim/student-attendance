@@ -13,3 +13,14 @@ td, th {
 .error {
     color: red;
 }
+
+.drag-and-drop {
+    width: 200px;
+    height: 200px;
+    background-color: aquamarine;
+}
+
+.load-file-label {
+    border: 1px solid black;
+    background-color:rgb(129, 129, 129);
+}

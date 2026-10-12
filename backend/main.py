@@ -11,16 +11,6 @@ FRONTEND_DIR = BASE_DIR / "frontend"
 
 app = FastAPI(title="Student Attendance")
 
-
-class StudentCreate(BaseModel):
-    fullName: str = Field(min_length=1)
-    present: bool = False
-
-
-class StudentUpdate(BaseModel):
-    present: bool
-
-
 def read_students() -> list[dict]:
     with DATA_FILE.open("r", encoding="utf-8") as file:
         return json.load(file)
